@@ -1,40 +1,14 @@
-io.stdout:setvbuf('no')
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 720
 
-push = require "push" --require the library
-love.window.setTitle("Press space to switch examples")
-
-local examples = {
-  "low-res",
-  "single-shader",
-  "multiple-shaders",
-  "mouse-input",
-  "canvases-shaders",
-  "stencil"
-}
-local example = 1
-
-for i = 1, #examples do
-  examples[i] = require("examples." .. examples[i])
+function love.load()
+	love.window.setMode(WINDOW_WIDTH, WINDOW_HEIGHT,{
+		fullscreen = false,
+		vsync = true,
+		resizable = false
+	})
 end
 
-function love.resize(w, h)
-  push:resize(w, h)
+function love.draw()
+	love.graphics.printf("Hello Pong!", 0, WINDOW_HEIGHT / 2 - 6, WINDOW_WIDTH, 'center')
 end
-
-function love.keypressed(key, scancode, isrepeat)
-  
-  if key == "space" then
-    example = (example < #examples) and example + 1 or 1
-    
-    --be sure to reset push settings
-    push:resetSettings()
-    
-    examples[example]()
-    love.load()
-  elseif key == "f" then --activate fullscreen mode
-    push:switchFullscreen() --optional width and height parameters for window mode
-  end
-  
-end
-
-examples[example]()
