@@ -10,6 +10,9 @@ function love.load()
 	
 	love.graphics.setDefaultFilter('nearest','nearest')
 
+	smallFont = love.graphics.newFont('font.ttf')
+	love.graphics.setFont(smallFont)
+
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT,{
 		fullscreen = false,
 		vsync = true,
@@ -30,7 +33,7 @@ function love.draw()
 	love.graphics.printf(
 		"Hello Pong!", 
 		0, 
-		VIRTUAL_HEIGHT / 2 - 6, 
+		20, 
 		VIRTUAL_WIDTH, 
 		'center')
 
