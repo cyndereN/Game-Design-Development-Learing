@@ -17,7 +17,7 @@ function love.load()
 	})
 end
 
-function love.keypresssed(key)
+function love.keypressed(key)
 	if key == 'escape' then
 		love.event.quit()
 	end
