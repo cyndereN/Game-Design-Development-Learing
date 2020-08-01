@@ -9,7 +9,7 @@ VIRTUAL_HEIGHT = 243
 PADDLE_SPEED = 200
 
 function love.load()
-	
+	math.randomseed(os.time())
 	love.graphics.setDefaultFilter('nearest','nearest')
 
 	smallFont = love.graphics.newFont('font.TTF', 8)
@@ -20,7 +20,7 @@ function love.load()
 	player2Score = 0
 
 	player1Y = 30
-	player2Y = VIRTUAL_HEIGHT - 30
+	player2Y = VIRTUAL_HEIGHT - 50
 
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT,{
 		fullscreen = false,
@@ -31,15 +31,15 @@ end
 
 function love.update(dt)
 	if love.keyboard.isDown('w') then
-		player1Y = player1Y - PADDLE_SPEED * dt
+		player1Y = math.max(0, player1Y - PADDLE_SPEED * dt)
 	elseif love.keyboard.isDown('s') then
-		player1Y = player1Y + PADDLE_SPEED * dt
+		player1Y = math.min(VIRTUAL_HEIGHT - 20, player1Y + PADDLE_SPEED * dt)
 	end
 
 	if love.keyboard.isDown('up') then
-		player2Y = player2Y - PADDLE_SPEED * dt
+		player2Y = math.max(0, player2Y - PADDLE_SPEED * dt)
 	elseif love.keyboard.isDown('down') then
-		player2Y = player2Y + PADDLE_SPEED * dt
+		player2Y = math.min(VIRTUAL_HEIGHT - 20, player2Y + PADDLE_SPEED * dt)
 	end
 
 end
@@ -65,8 +65,8 @@ function love.draw()
 
 	love.graphics.rectangle('fill', VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
 
-	love.graphics.rectangle('fill', 10, player1Y, 5, 20)
-	love.graphics.rectangle('fill', VIRTUAL_WIDTH - 10, player2Y, 5, 20)
+	love.graphics.rectangle('fill', 20, player1Y, 5, 20)
+	love.graphics.rectangle('fill', VIRTUAL_WIDTH - 25, player2Y, 5, 20)
 
 	push:apply('end')
 end
