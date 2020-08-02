@@ -1,4 +1,8 @@
+Class = require 'class'
 push = require 'push'
+
+require 'Ball'
+require 'Paddle'
 
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
@@ -19,14 +23,10 @@ function love.load()
 	player1Score = 0
 	player2Score = 0
 
-	player1Y = 30
-	player2Y = VIRTUAL_HEIGHT - 50
+	paddle1 = Paddle(5, 30, 5, 20)
+	paddle2 = Paddle(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 50, 5, 20)
 
-	ballX = VIRTUAL_WIDTH / 2 - 2
-	ballY = VIRTUAL_HEIGHT / 2 - 2
-
-	ballDX = math.random(2) == 1 and -100 or 100
-	ballDY = math.random(-50, 50)
+	ball = Ball(VIRTUAL_WIDTH / 2 - 2,  VIRTUAL_HEIGHT / 2 - 2, 4, 4)
 
 	gameState = 'start'
 
@@ -38,21 +38,28 @@ function love.load()
 end
 
 function love.update(dt)
+
+	paddle1:update(dt)
+	paddle2:update(dt)
+
 	if love.keyboard.isDown('w') then
-		player1Y = math.max(0, player1Y - PADDLE_SPEED * dt)
+		paddle1.dy = -PADDLE_SPEED
 	elseif love.keyboard.isDown('s') then
-		player1Y = math.min(VIRTUAL_HEIGHT - 20, player1Y + PADDLE_SPEED * dt)
+		paddle1.dy = PADDLE_SPEED
+	else 
+		paddle1.dy = 0
 	end
 
 	if love.keyboard.isDown('up') then
-		player2Y = math.max(0, player2Y - PADDLE_SPEED * dt)
+		paddle2.dy = -PADDLE_SPEED
 	elseif love.keyboard.isDown('down') then
-		player2Y = math.min(VIRTUAL_HEIGHT - 20, player2Y + PADDLE_SPEED * dt)
+		paddle2.dy = PADDLE_SPEED
+	else
+		paddle2.dy = 0
 	end
 
-	if gameState == 'play'then
-		ballX = ballX + ballDX * dt
-		ballY = ballY + ballDY * dt
+	if gameState == 'play' then
+		ball:update(dt)
 	end
 end
 
@@ -65,12 +72,7 @@ function love.keypressed(key)
 			gameState = 'play' 
 		elseif gameState == 'play' then
 			gameState = 'start'
-
-			ballX = VIRTUAL_WIDTH / 2 - 2
-			ballY = VIRTUAL_HEIGHT / 2 - 2
-
-			ballDX = math.random(2) == 1 and -100 or 100
-			ballDY = math.random(-50, 50)
+			ball:reset()
 		end
 	end
 end
@@ -90,14 +92,14 @@ function love.draw()
 		love.graphics.printf("Play State!", 0, 20, VIRTUAL_WIDTH, 'center')
 	end
 
+	paddle1:render()
+	paddle2:render()
+
+	ball:render()
+
 	love.graphics.setFont(scoreFont)
 	love.graphics.print(player1Score, VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3)
 	love.graphics.print(player2Score, VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 3)
-
-	love.graphics.rectangle('fill', ballX, ballY, 4, 4)
-
-	love.graphics.rectangle('fill', 20, player1Y, 5, 20)
-	love.graphics.rectangle('fill', VIRTUAL_WIDTH - 25, player2Y, 5, 20)
 
 	push:apply('end')
 end
