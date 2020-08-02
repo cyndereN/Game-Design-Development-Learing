@@ -97,9 +97,18 @@ function love.draw()
 
 	ball:render()
 
+	displayFPS()
+
 	love.graphics.setFont(scoreFont)
 	love.graphics.print(player1Score, VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3)
 	love.graphics.print(player2Score, VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 3)
 
 	push:apply('end')
+end
+
+function displayFPS()
+    love.graphics.setFont(smallFont)
+    love.graphics.setColor(0, 255/255, 0, 255/255)
+    love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 40, 20)
+    love.graphics.setColor(1, 1, 1, 1)
 end
