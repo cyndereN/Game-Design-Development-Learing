@@ -42,6 +42,24 @@ function love.update(dt)
 	paddle1:update(dt)
 	paddle2:update(dt)
 
+	if ball:collides(paddle1) then
+		ball.dx = -ball.dx
+	end
+
+	if ball:collides(paddle2) then
+		ball.dx = -ball.dx
+	end
+
+	if ball.y <= 0 then
+		ball.dy = -ball.dy
+		ball.y = 0
+	end
+
+	if ball.y >= VIRTUAL_HEIGHT - 4 then
+		ball.dy = -ball.dy
+		ball.y = VIRTUAL_HEIGHT - 4
+	end
+
 	if love.keyboard.isDown('w') then
 		paddle1.dy = -PADDLE_SPEED
 	elseif love.keyboard.isDown('s') then
