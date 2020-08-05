@@ -24,10 +24,15 @@ function love.load()
 
 	scoreFont = love.graphics.newFont('font.TTF', 32)
 
+	victoryFont = love.graphics.newFont('font.TTF', 24)
+
+
 	player1Score = 0
 	player2Score = 0
 
 	servingPlayer = math.random(2) 
+
+	winningPlayer = 0
 
 	paddle1 = Paddle(5, 30, 5, 20)
 	paddle2 = Paddle(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 50, 5, 20)
@@ -96,7 +101,13 @@ function love.update(dt)
 			ball:reset()
 			ball.dx = 100
 			servingPlayer = 1
-			gameState = 'serve'
+
+			if player2Score >= 3 then
+				gameState = 'victory'
+				winningPlayer = 2
+			else
+				gameState = 'serve'
+			end
 		end
 
 		if ball.x > VIRTUAL_WIDTH + 4 then
@@ -104,7 +115,13 @@ function love.update(dt)
 			ball:reset()
 			ball.dx = -100
 			servingPlayer = 2
-			gameState = 'serve'
+
+			if player1Score >= 3 then
+				gameState = 'victory'
+				winningPlayer = 1
+			else
+				gameState = 'serve'
+			end
 		end
 	end
 end
@@ -118,6 +135,10 @@ function love.keypressed(key)
 			gameState = 'serve' 
 		elseif gameState == 'serve' then
 			gameState = 'play'
+		elseif gameState == 'victory' then
+			gameState = 'start'
+			player1Score = 0
+			player2Score = 0
 		end
 	end
 end
@@ -132,12 +153,17 @@ function love.draw()
 
 	if gameState == 'start' then 
 		love.graphics.setFont(smallFont) 
-		love.graphics.printf("Hello Pong!", 0, 20, VIRTUAL_WIDTH, 'center')
-		love.graphics.printf("Press Enter to play.", 0, 32, VIRTUAL_WIDTH, 'center')
+		love.graphics.printf("Hello Pong!", 0, 10, VIRTUAL_WIDTH, 'center')
+		love.graphics.printf("Press Enter to play.", 0, 20, VIRTUAL_WIDTH, 'center')
 	elseif gameState == 'serve' then
 		love.graphics.setFont(smallFont) 
-		love.graphics.printf('Player ' .. tostring(servingPlayer) .. "'s turn!", 0, 20, VIRTUAL_WIDTH, 'center')
-		love.graphics.printf("Press Enter to serve.", 0, 32, VIRTUAL_WIDTH, 'center')
+		love.graphics.printf('Player ' .. tostring(servingPlayer) .. "'s turn!", 0, 10, VIRTUAL_WIDTH, 'center')
+		love.graphics.printf("Press Enter to serve.", 0, 20, VIRTUAL_WIDTH, 'center')
+	elseif gameState == 'victory' then
+		love.graphics.setFont(victoryFont)
+		love.graphics.printf('Player ' .. tostring(winningPlayer) .. " wins!", 0, 10, VIRTUAL_WIDTH, 'center')
+		love.graphics.setFont(smallFont) 
+		love.graphics.printf("Press Enter to restart.", 0, 42, VIRTUAL_WIDTH, 'center')
 	end
 
 	paddle1:render()
