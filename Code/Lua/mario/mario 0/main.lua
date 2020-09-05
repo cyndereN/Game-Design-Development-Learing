@@ -1,5 +1,6 @@
 Class = require 'class'
 push = require 'push'
+require 'Util'
 require 'Map'
 
 WINDOW_WIDTH = 1280
