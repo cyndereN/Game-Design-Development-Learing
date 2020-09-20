@@ -1,7 +1,5 @@
 Bird = Class{}
 
-local GRAVITY = 20
-
 function Bird:init()
 
     self.image = love.graphics.newImage('bird.png')
@@ -14,10 +12,4 @@ end
 
 function Bird:render()
     love.graphics.draw(self.image, self.x, self.y)
-end
-
-function Bird:update(dt)
-    self.dy = self.dy + GRAVITY * dt
-
-    self.y = self.y + self.dy
 end
