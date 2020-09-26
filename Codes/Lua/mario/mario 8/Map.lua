@@ -4,7 +4,7 @@ require 'Player'
 Map = Class{}
 
 TILE_BRICK = 1
-TILE_EMPTY = 4
+TILE_EMPTY = -1
 
 CLOUD_LEFT = 6
 CLOUD_RIGHT = 7
@@ -21,19 +21,23 @@ JUMP_BLOCK_HIT = 9
 local SCROLL_SPEED = 62
 
 function Map:init()
+
     self.spritesheet = love.graphics.newImage('graphics/spritesheet.png')
+    self.sprites = generateQuads(self.spritesheet, 16, 16)
+    self.music = love.audio.newSource('sounds/music.wav', 'static')
+
     self.tileWidth = 16
     self.tileHeight = 16
     self.mapWidth = 30
     self.mapHeight = 28
     self.tiles = {}
 
+    self.gravity = 15
+
     self.player = Player(self)
 
     self.camX = 0
     self.camY = -3
-
-    self.tileSprites = generateQuads(self.spritesheet, self.tileWidth, self.tileHeight)
 
     self.mapWidthPixels = self.mapWidth * self.tileWidth
     self.mapHeightPixels = self.mapHeight * self.tileHeight
@@ -96,33 +100,57 @@ function Map:init()
             x = x + 2
         end
     end
+
+    self.music:setLooping(true)
+    self.music:play()
 end
 
-function Map:setTile(x, y, tile)
-    self.tiles[(y - 1) * self.mapWidth + x] = tile
-end
+function Map:collides(tile)
+    local collidables = {
+        TILE_BRICK, JUMP_BLOCK, JUMP_BLOCK_HIT,
+        MUSHROOM_TOP, MUSHROOM_BOTTOM
+    }
 
-function Map:getTile(x, y)
-    return self.tiles[(y - 1) * self.mapWidth + x] 
+    for _, v in ipairs(collidables) do
+        if tile.id == v then
+            return true
+        end
+    end
+
+    return false
 end
 
 function Map:update(dt)
-    self.camX = math.max(0,
-        math.min(self.player.x-VIRTUAL_WIDTH/2,
-            math.min(self.mapWidthPixels-VIRTUAL_WIDTH, self.player.x)))
-    
     self.player:update(dt)
+    
+    self.camX = math.max(0, math.min(self.player.x - VIRTUAL_WIDTH / 2,
+        math.min(self.mapWidthPixels - VIRTUAL_WIDTH, self.player.x)))
 end
 
 function Map:tileAt(x, y)
-    return self:getTile(math.floor(x/self.tileWidth)+1, math.floor(y/self.tileHeight)+1)
+    return {
+        x = math.floor(x / self.tileWidth) + 1,
+        y = math.floor(y / self.tileHeight) + 1,
+        id = self:getTile(math.floor(x / self.tileWidth) + 1, math.floor(y / self.tileHeight) + 1)
+    }
+end
+
+function Map:getTile(x, y)
+    return self.tiles[(y - 1) * self.mapWidth + x]
+end
+
+function Map:setTile(x, y, id)
+    self.tiles[(y - 1) * self.mapWidth + x] = id
 end
 
 function Map:render()
     for y = 1, self.mapHeight do
         for x = 1, self.mapWidth do
-            love.graphics.draw(self.spritesheet, self.tileSprites[self:getTile(x, y)],
-                (x - 1) * self.tileWidth, (y - 1) * self.tileHeight)
+            local tile = self:getTile(x, y)
+            if tile ~= TILE_EMPTY then
+                love.graphics.draw(self.spritesheet, self.sprites[tile],
+                    (x - 1) * self.tileWidth, (y - 1) * self.tileHeight)
+            end
         end
     end
 
